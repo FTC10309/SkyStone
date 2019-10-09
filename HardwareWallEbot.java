@@ -149,7 +149,7 @@ public class HardwareWallEbot {
         lBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         wallELift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        wallECollect.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        wallECollect.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
      }
 
     private void directionofWheels(){

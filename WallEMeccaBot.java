@@ -6,18 +6,13 @@ import com.qualcomm.robotcore.util.Range;
 public class WallEMeccaBot extends HardwareWallEbot {
     //AndyMark NeveRest 40 motor, 103 ticks per round, 4 in wheels,
     private static final double             TICK_MM                 = 3.511;
-    private static final double             HEADING_THRESHOLD       = 0.02;
-
-    private double lFrontPower      = 0.0;
-    private double rFrontPower      = 0.0;
-    private double lBackPower       = 0.0;
-    private double rBackPower       = 0.0;
-
+    private static final double             HEADING_THRESHOLD       = 0.12;
     private double imuTare          = 0;
-    private int lFrontOldEncoder    = 0;
-    private int rFrontOldEncoder    = 0;
-    private int lBackOldEncoder     = 0;
-    private int rBackOldEncoder     = 0;
+
+    public double lFrontPower      = 0.0;
+    public double rFrontPower      = 0.0;
+    public double lBackPower       = 0.0;
+    public double rBackPower       = 0.0;
 
     public WallEMeccaBot(){}                //constructor
 
@@ -41,27 +36,24 @@ public class WallEMeccaBot extends HardwareWallEbot {
         double temp = forward*Math.cos(heading) - right*Math.sin(heading);
         right = forward*Math.sin(heading) + right*Math.cos(heading);
         forward = temp;
-        runMeccaRC(forward,right,cTurn, true,true);
+        runMeccaRC(forward,right,cTurn);
+    }
+
+    public void runMeccaOdo(double forward, double right, double cTurn, double sin, double cos){
+        double temp = forward*cos + right*sin;
+        right = -forward*sin + right*cos;
+        forward = temp;
+        runMeccaRC(forward,right,cTurn);
     }
 
     /*robot centric driving for Meccanum drive, have option to turn either or both sides off
      by setting leftBackOn/rightBackOn to false*/
-    public void runMeccaRC(double forward, double right, double cTurn, boolean leftBackOn, boolean rightBackOn){
-        if (Math.abs(right)>0.05) forward = forward * 0.83; // Jess strafes only 4/5 efficient
-        if (forward < 0 && !leftBackOn) { //put left wheels on very low power
-            lFrontPower = -0.05;
-            lBackPower = -0.05;
-        }else {
-            lFrontPower = forward + cTurn + right;
-            lBackPower = forward + cTurn - right;
-        }
-        if (forward < 0 && !rightBackOn){ //put right wheels on very low power
-            rFrontPower = -0.05;
-            rBackPower = -0.05;
-        }else{
-            rFrontPower = forward - cTurn - right;
-            rBackPower = forward - cTurn + right;
-        }
+    public void runMeccaRC(double forward, double right, double cTurn){
+        if (Math.abs(right)>0.1) forward = forward * 0.83; // Jess strafes only 4/5 efficient
+        lFrontPower = forward + cTurn + right;
+        lBackPower = forward + cTurn - right;
+        rFrontPower = forward - cTurn - right;
+        rBackPower = forward - cTurn + right;
         clipPower();  // normalize so that the maximum power is not beyond -1 and 1
         runMotors();
     }
@@ -74,14 +66,14 @@ public class WallEMeccaBot extends HardwareWallEbot {
     }
 
     //convert any angle in radian to equivalent angle between -pi and pi
-    private double piToMinusPi(double angle){
+    public static double piToMinusPi(double angle){
         while (angle > Math.PI){angle -= Math.PI*2;}
         while (angle < -Math.PI){angle += Math.PI*2;}
         return angle;
     }
 
     private void clipPower(){  //normalize powers, so that maxpower is not beyond -1 to 1.
-        double largerPower = 1;
+        double largerPower = 0.99;
         largerPower = Math.max(Math.abs(lFrontPower), largerPower);
         largerPower = Math.max(Math.abs(lBackPower), largerPower);
         largerPower = Math.max(Math.abs(rFrontPower), largerPower);
@@ -93,25 +85,13 @@ public class WallEMeccaBot extends HardwareWallEbot {
     }
 
     public String toString(){
+        //mainBulkData = mainExpansionHub.getBulkInputData();
         String result = "";
         result += "Power lf: "+ String.format("%.2f",lFrontPower);
         result += "; rf: " + String.format("%.2f",rFrontPower);
         result += "; lb: " + String.format("%.2f",lBackPower);
         result += "; rb: " + String.format("%.2f",rBackPower);
-        result += "; Encoder :" + String.format("%4d",(lFront.getCurrentPosition()-lFrontOldEncoder));
-        result += "; " + String.format("%4d",(rFront.getCurrentPosition() - rFrontOldEncoder));
-        result += "; " + String.format("%4d",(lBack.getCurrentPosition() - lBackOldEncoder));
-        result += "; " + String.format("%4d",(rBack.getCurrentPosition() - rBackOldEncoder));
-        result += "; x : " + String.format("%6.1f", linearXMM());
-        result += "; y : " + String.format("%6.1f", linearYMM());
         return result;
-    }
-
-    public void resetEncoder(){ //update the values for last time
-        lFrontOldEncoder = lFront.getCurrentPosition();
-        rFrontOldEncoder = rFront.getCurrentPosition();
-        lBackOldEncoder = lBack.getCurrentPosition();
-        rBackOldEncoder = rBack.getCurrentPosition();
     }
 
     public void directDrive(double lf, double rf, double lb, double rb){//direct control of motors.
@@ -138,20 +118,5 @@ public class WallEMeccaBot extends HardwareWallEbot {
 
     private double getSteer(double error, double PCoeff) {
         return Range.clip(error * PCoeff, -1, 1);
-    }
-
-    public double linearYMM(){ //Odometery in forward/backward
-        return (lFront.getCurrentPosition()- lFrontOldEncoder+
-                lBack.getCurrentPosition() - lBackOldEncoder +
-                rFront.getCurrentPosition() - rFrontOldEncoder+
-                rBack.getCurrentPosition() - rBackOldEncoder) / 4. / TICK_MM;
-    }
-
-    public double linearXMM(){
-        //Odometery in strafing direction, strafing slips so only 4/5 is counted
-        return(lFront.getCurrentPosition() - lFrontOldEncoder +
-            lBackOldEncoder - lBack.getCurrentPosition() +
-            rFrontOldEncoder - rFront.getCurrentPosition() +
-            rBack.getCurrentPosition() - rBackOldEncoder) *0.207 / TICK_MM;
     }
 }

@@ -55,9 +55,9 @@ import static org.firstinspires.ftc.teamcode.odometry.OdoGPS.Y_INDEX;
 
 //Start on blue side
 
-@Autonomous(name="Two stones red", group="Red Linear Opmode")
+@Autonomous(name="Two stones blue", group="Blue Linear Opmode")
 //@Disabled
-public class TwoStonesRedShort extends LinearOpMode {
+public class TwoStonesBlueShort extends LinearOpMode {
 
     // Declare OpMode members.
     private WallEGPSMeccaBot r = new WallEGPSMeccaBot();
@@ -67,7 +67,7 @@ public class TwoStonesRedShort extends LinearOpMode {
     private static final double stopMinPower = 0.1;
     double power = startMinPower;
     double targetY = ENCODER_PER_INCH;
-    double targetX = -11* ENCODER_PER_INCH;
+    double targetX = 11* ENCODER_PER_INCH;
     double targetO = 0;
 
     @Override
@@ -90,7 +90,7 @@ public class TwoStonesRedShort extends LinearOpMode {
         r.startGPS(30);
         r.setBreakMode();
         double rotateArm = HardwareWallEbot.ROTATE_BLUE_BACK;
-        int skyOrder = ImageHelper.SKY_LEFT;
+        int skyOrder = ImageHelper.SKY_RIGHT;
 
         // Wait for the game to start (driver presses PLAY)
         while (!isStarted()&& !isStopRequested()) {
@@ -103,7 +103,7 @@ public class TwoStonesRedShort extends LinearOpMode {
         r.resetGPS(0,0,0);
         int index =0;
         double distanceTo = r.prepareMove(targetX,targetY,targetO);
-        power = startMinPower;
+        power = 0.5;
         while(opModeIsActive() && distanceTo > ENCODER_PER_INCH && index < 20){
             distanceTo = r.moveGPS(power);
             power += pIncrease;
@@ -112,23 +112,23 @@ public class TwoStonesRedShort extends LinearOpMode {
                 r.foundationMover.setPosition(FOUNDATIONMOVERDOWN);
                 r.foundationMover2.setPosition(FOUNDATIONMOVER2DOWN);
             }else if (index ==4) im.takePicture();
-             else if (index == 6)skyOrder = im.findStonesRed();
+             else if (index == 6)skyOrder = im.findStonesBlue();
              else if (index ==8) r.wallECollect.setPower(.5);
              else if (index ==10){
-                if(skyOrder == ImageHelper.SKY_LEFT)rotateArm = ROTATE_BLUE_BACK-0.40*SERVO_PER_RADIAN;
+                if(skyOrder == ImageHelper.SKY_RIGHT)rotateArm = ROTATE_BLUE_BACK+0.40*SERVO_PER_RADIAN;
                 r.rotateArm.setPosition(rotateArm);
                 r.pickAndDrop.setPosition(HardwareWallEbot.PICK_UP);
             }
         }
-        targetY = 21*ENCODER_PER_INCH;
-        if(skyOrder == ImageHelper.SKY_RIGHT){
-            targetX = -11.5 * ENCODER_PER_INCH;
+        targetY = 21 * ENCODER_PER_INCH;
+        if(skyOrder == ImageHelper.SKY_LEFT){
+            targetX = 11.5 * ENCODER_PER_INCH;
         }else if (skyOrder == ImageHelper.SKY_CENTER) {
-            targetX = -18.5 * ENCODER_PER_INCH;
+            targetX = 18.5 * ENCODER_PER_INCH;
         }else{
-            targetX = -19.5 * ENCODER_PER_INCH;
-            targetO = -0.40;
-            targetCollect = (int) (13.5 *COLLECT_ENCODER_PER_INCH);
+            targetX = 19.5 * ENCODER_PER_INCH;
+            targetO = 0.40;
+            targetCollect =(int) (13.5*COLLECT_ENCODER_PER_INCH);
             r.wallECollect.setTargetPosition(targetCollect);
         }
         r.wallELift.setPower(.85);
@@ -159,43 +159,40 @@ public class TwoStonesRedShort extends LinearOpMode {
         r.wallECollect.setTargetPosition(5*COLLECT_ENCODER_PER_INCH);
         stopWatch += 700;
         while(opModeIsActive() && r.period.milliseconds()<stopWatch){}
-        r.runMeccaRC(0,0,0.7);
-        while (opModeIsActive() && r.gps.odoData[OdoGPS.O_INDEX] < Math.PI/2-0.4);
+        r.runMeccaRC(0,0,-0.7);
+        while (opModeIsActive() && r.gps.odoData[OdoGPS.O_INDEX] > -Math.PI/2+0.4);
         r.wallELift.setTargetPosition(0);
-        targetY = 23. * ENCODER_PER_INCH;
-        targetO = Math.PI/2;
-        targetX = 52. * ENCODER_PER_INCH;
+        targetY = 24. * ENCODER_PER_INCH;
+        targetO = -Math.PI/2;
+        targetX = -52. * ENCODER_PER_INCH;
         power = maxP;
         distanceTo = r.prepareMove(targetX, targetY,targetO);
-        int leftHue = 0;
-        while (opModeIsActive() && !(leftHue > 0 && leftHue < 50)
-                && !(leftHue > 310 && leftHue < 360)){
+        int hue = 0;
+        while (opModeIsActive() && !(hue> 180 && hue < 240)){
             distanceTo = r.moveGPS(power);
-            leftHue = r.getLeftHue();
+            hue = r.getRightHue();
         }
         r.wallELift.setTargetPosition(1700);
-        r.wallECollect.setTargetPosition(15*COLLECT_ENCODER_PER_INCH);
-        r.rotateArm.setPosition(0);
-        targetX=64. * ENCODER_PER_INCH;
-        targetY = 24. * ENCODER_PER_INCH;
-        targetO = Math.PI/2;
+        r.wallECollect.setTargetPosition(16*COLLECT_ENCODER_PER_INCH);
+        r.rotateArm.setPosition(ROTATE_BLUE_BACK+0.2);
+        targetX=-62. * ENCODER_PER_INCH;
         distanceTo = r.prepareMove(targetX,targetY,targetO);
-        while (opModeIsActive() && distanceTo > 3*ENCODER_PER_INCH){
+        while (opModeIsActive() && distanceTo > 2*ENCODER_PER_INCH){
             distanceTo = r.moveGPS(power);
             if(distanceTo < 8* ENCODER_PER_INCH)power -= pIncrease;
             if(power < stopMinPower) power = stopMinPower;
         }
-        turnIMUAbs(1,0.08);
-        r.runMeccaRC(0,0,0.7);
-        stopWatch = r.period.milliseconds()+100;
+        turnIMUAbs(1,-0.08);
+        r.runMeccaRC(0,0,-0.7);
+        stopWatch = r.period.milliseconds()+50;
         while(opModeIsActive() && r.period.milliseconds()<stopWatch);
         r.pickAndDrop.setPosition(HardwareWallEbot.PICK_UP);
-        while(opModeIsActive() && r.gps.odoData[O_INDEX]<Math.PI/2-0.4){}
+        while(opModeIsActive() && r.gps.odoData[O_INDEX]> -Math.PI/2+0.4){}
         r.wallECollect.setTargetPosition(6*HardwareWallEbot.COLLECT_ENCODER_PER_INCH);
         r.wallELift.setTargetPosition(0);
-        targetY = 20.* ENCODER_PER_INCH;
-        targetX = 48. * ENCODER_PER_INCH;
-        targetO = Math.PI/2;
+        targetY = 21.* ENCODER_PER_INCH;
+        targetX = -48. * ENCODER_PER_INCH;
+        targetO = -Math.PI/2;
         distanceTo = r.prepareMove(targetX,targetY,targetO);
         power = startMinPower;
         while (opModeIsActive() && distanceTo > 2.* ENCODER_PER_INCH){
@@ -203,13 +200,12 @@ public class TwoStonesRedShort extends LinearOpMode {
             power += pIncrease;
             if(power > maxP)power = maxP;
         }
-        if(skyOrder == ImageHelper.SKY_RIGHT)targetX = 17 * ENCODER_PER_INCH;
-        else if (skyOrder == ImageHelper.SKY_CENTER) targetX = 9 * ENCODER_PER_INCH;
-        else targetX = 0;
-        targetO = Math.PI/2;
+        if(skyOrder == ImageHelper.SKY_LEFT)targetX = -14* ENCODER_PER_INCH;
+        else if (skyOrder == ImageHelper.SKY_CENTER) targetX = -6 * ENCODER_PER_INCH;
+        else targetX = 2*ENCODER_PER_INCH;
         power = maxP;
         distanceTo = r.prepareMove(targetX,targetY,targetO);
-        while (opModeIsActive() && distanceTo >  ENCODER_PER_INCH){
+        while (opModeIsActive() && distanceTo > 2*ENCODER_PER_INCH){
             distanceTo = r.moveGPS(power);
             if(distanceTo < 6.* ENCODER_PER_INCH){
                 power -= pIncrease;
@@ -218,9 +214,9 @@ public class TwoStonesRedShort extends LinearOpMode {
         }
         r.rotateArm.setPosition(HardwareWallEbot.ROTATE_BLUE_BACK);
         r.wallECollect.setTargetPosition(8*HardwareWallEbot.COLLECT_ENCODER_PER_INCH);
-        turnIMUAbs(1,0.08);
+        turnIMUAbs(1,-0.06);
         r.wallECollect.setTargetPosition(13*COLLECT_ENCODER_PER_INCH);
-        r.wallELift.setTargetPosition(-300);
+        r.wallELift.setTargetPosition(-200);
         r.pickAndDrop.setPosition((PICK_DOWN+PICK_UP)/2);
         stopWatch = r.period.milliseconds() + 300;
         while(opModeIsActive() && r.period.milliseconds() < stopWatch){}
@@ -229,24 +225,23 @@ public class TwoStonesRedShort extends LinearOpMode {
         while(opModeIsActive() && r.period.milliseconds()<stopWatch){}
         r.wallECollect.setTargetPosition(6*HardwareWallEbot.COLLECT_ENCODER_PER_INCH);
         r.wallELift.setTargetPosition(1500);
-        stopWatch += 600;
+        stopWatch+= 600;
         while(opModeIsActive() && r.period.milliseconds() < stopWatch){}
-        r.runMeccaRC(0,0,0.7);
-        while (opModeIsActive() && r.gps.odoData[OdoGPS.O_INDEX] < Math.PI/2-0.4){ }
-        power = maxP;
+        r.runMeccaRC(0,0,-0.7);
+        while (opModeIsActive() && r.gps.odoData[OdoGPS.O_INDEX] > -Math.PI/2+0.4){ }
         r.wallELift.setTargetPosition(0);
-        targetY = 22. * ENCODER_PER_INCH;
-        targetX = 70. * ENCODER_PER_INCH;
+        power = maxP;
+        targetY = 24. * ENCODER_PER_INCH;
+        targetX = -70. * ENCODER_PER_INCH;
         distanceTo = r.prepareMove(targetX,targetY,targetO);
-        leftHue = 140;
+        hue = 140;
         while (opModeIsActive() && distanceTo > 3.* ENCODER_PER_INCH){
             distanceTo = r.moveGPS(power);
-            leftHue = r.getLeftHue();
-            if((leftHue > 0 && leftHue < 50)
-                    || (leftHue > 310 && leftHue < 360))r.wallELift.setTargetPosition(1500);
+            hue = r.getRightHue();
+            if(hue> 180 && hue < 240)r.wallELift.setTargetPosition(1500);
         }
-        targetX = 86 * ENCODER_PER_INCH;
-        targetY = 21 *ENCODER_PER_INCH;
+        targetX = -86 * ENCODER_PER_INCH;
+        targetY = 25 *ENCODER_PER_INCH;
         targetO = 0;
         distanceTo = r.prepareMove(targetX,targetY,targetO);
         r.wallECollect.setTargetPosition(8*COLLECT_ENCODER_PER_INCH);
@@ -258,7 +253,7 @@ public class TwoStonesRedShort extends LinearOpMode {
             if(distanceTo < 8.* ENCODER_PER_INCH)power-= pIncrease;
             if(power < stopMinPower)power = stopMinPower;
         }
-        turnIMUAbs(2,0);
+        turnIMUAbs(2,-0.08);
         r.stopMotor();
         r.getOrientation();
         r.gps.resetOrientation(-(r.getHeading()-r.imuTare));
@@ -294,8 +289,8 @@ public class TwoStonesRedShort extends LinearOpMode {
         r.foundationMover2.setPosition(FOUNDATIONMOVER2LOWLIMIT);
         r.stopMotor();
         r.gps.resetY(0);
-        targetY = ENCODER_PER_INCH;
-        targetX = 28.* ENCODER_PER_INCH;
+        targetY = 2*ENCODER_PER_INCH;
+        targetX = -28.* ENCODER_PER_INCH;
         targetO = 0;
         r.wallECollect.setTargetPosition(6*COLLECT_ENCODER_PER_INCH);
         r.wallELift.setTargetPosition(0);
@@ -305,13 +300,12 @@ public class TwoStonesRedShort extends LinearOpMode {
         while(opModeIsActive() && r.period.milliseconds() < stopWatch){
             distanceTo = r.moveGPS(power);
         }
-        targetO = Math.PI/4;
+        targetO = -Math.PI/4;
         distanceTo = r.prepareMove(targetX,targetY,targetO);
-        leftHue = 140;
-        while(opModeIsActive() && !(leftHue > 0 && leftHue < 50)
-                && !(leftHue > 310 && leftHue < 360) && !r.gps.stopped){
+        hue = 140;
+        while(opModeIsActive() && !(hue> 180 && hue < 240) && !r.gps.stopped){
             distanceTo = r.moveGPS(power);
-            leftHue = r.getLeftHue();
+            hue = r.getRightHue();
         }
         r.stopMotor();
         r.gps.stop();

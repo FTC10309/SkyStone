@@ -4,33 +4,34 @@
  * Created by qiu29 on 9/27/2018.
  */
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import org.firstinspires.ftc.teamcode.revExtensions.RevBulkData;
+ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+ import com.qualcomm.robotcore.hardware.DcMotor;
 
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.CAPSTONE_IN;
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.CAPSTONE_OUT;
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.COLLECT_ENCODER_PER_INCH;
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.FOUNDATIONMOVER2DOWN;
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.FOUNDATIONMOVER2HIGHLIMIT;
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.FOUNDATIONMOVER2LOWLIMIT;
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.FOUNDATIONMOVER2MIDDLE;
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.FOUNDATIONMOVERDOWN;
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.FOUNDATIONMOVERHIGHLIMIT;
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.FOUNDATIONMOVERLOWLIMIT;
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.FOUNDATIONMOVERMIDDLE;
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.LIFT_ENCODER_PER_RADIAN;
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.MAX_COLLECT_ENCODER;
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.MAX_LIFT_ENCODER;
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.MIN_LIFT_ENCODER;
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.PICK_UP;
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.ROTATE_BLUE_BACK;
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.ROTATE_NEUTRAL;
-import static org.firstinspires.ftc.teamcode.odometry.OdoGPS.ENCODER_PER_INCH;
-import static org.firstinspires.ftc.teamcode.odometry.OdoGPS.X_INDEX;
-import static org.firstinspires.ftc.teamcode.odometry.OdoGPS.Y_INDEX;
-import static org.firstinspires.ftc.teamcode.odometry.OdoGPS.O_INDEX;
+ import org.firstinspires.ftc.teamcode.revExtensions.RevBulkData;
+
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.CAPSTONE_IN;
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.CAPSTONE_OUT;
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.COLLECT_ENCODER_PER_INCH;
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.FOUNDATIONMOVER2DOWN;
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.FOUNDATIONMOVER2HIGHLIMIT;
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.FOUNDATIONMOVER2LOWLIMIT;
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.FOUNDATIONMOVER2MIDDLE;
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.FOUNDATIONMOVERDOWN;
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.FOUNDATIONMOVERHIGHLIMIT;
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.FOUNDATIONMOVERLOWLIMIT;
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.FOUNDATIONMOVERMIDDLE;
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.LIFT_ENCODER_PER_RADIAN;
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.MAX_COLLECT_ENCODER;
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.MAX_LIFT_ENCODER;
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.MIN_LIFT_ENCODER;
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.PICK_UP;
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.ROTATE_BLUE_BACK;
+ import static org.firstinspires.ftc.teamcode.HardwareWallEbot.ROTATE_NEUTRAL;
+ import static org.firstinspires.ftc.teamcode.odometry.OdoGPS.ENCODER_PER_INCH;
+ import static org.firstinspires.ftc.teamcode.odometry.OdoGPS.O_INDEX;
+ import static org.firstinspires.ftc.teamcode.odometry.OdoGPS.X_INDEX;
+ import static org.firstinspires.ftc.teamcode.odometry.OdoGPS.Y_INDEX;
 
  /**
  * Opmode for TeleOp operation
@@ -53,16 +54,16 @@ import static org.firstinspires.ftc.teamcode.odometry.OdoGPS.O_INDEX;
  *  gamepad2 X : auto dump
  *  */
 
-@TeleOp(name="TeleOp Build", group="Linear Opmode")
+@TeleOp(name="TeleOp Quarry", group="Linear Opmode")
 //@Disabled
-public class TeleopWallE2 extends LinearOpMode {
+public class TeleOpQuarry extends LinearOpMode {
 
     // Declare OpMode members.
     private WallEGPSMeccaBot r = new WallEGPSMeccaBot();
     private static final double INCREMENT = .02;
     private static final int ENCODERINCREMENT = 40;
-    private double foundationMoverPosition = FOUNDATIONMOVERDOWN;
-    private double foundationMover2Position = FOUNDATIONMOVER2DOWN;
+    private double foundationMoverPosition = FOUNDATIONMOVERHIGHLIMIT;
+    private double foundationMover2Position = FOUNDATIONMOVER2LOWLIMIT;
     private static final double rotateArmHighLimit = 1.;
     private static final double rotateArmLowLimit = -1.;
     private static final double pickUpStoneLowLimit = .15;
@@ -73,7 +74,7 @@ public class TeleopWallE2 extends LinearOpMode {
     private double pickUpStonePosition = HardwareWallEbot.PICK_UP;
     private double liftEncoder = 0, collectEncoder = 0;
     private double targetRotateArm = 0.;
-    private int targetLift = 0, targetCollect = 0, targetLiftTwo =0;
+    private int targetLift = 0, targetCollect = 0;
     private int liftPos = 0, collectPos = 0;
     private boolean stateIsSet = false;
     private boolean isAngleFree = true;
@@ -114,10 +115,10 @@ public class TeleopWallE2 extends LinearOpMode {
 
     private void moveCapstone(){
         double joyStick = -gamepad2.left_stick_y;
-        if (joyStick > 0.9 && !capstonePicked){
-            r.foundationMover2.setPosition(FOUNDATIONMOVER2MIDDLE);
+        if (joyStick > 0.9  && !capstonePicked){
             r.foundationMover.setPosition(FOUNDATIONMOVERMIDDLE);
-            liftEncoder = 0.45*LIFT_ENCODER_PER_RADIAN;
+            r.foundationMover2.setPosition(FOUNDATIONMOVER2MIDDLE);
+            liftEncoder = 0.447*LIFT_ENCODER_PER_RADIAN;
             r.wallELift.setTargetPosition((int)liftEncoder);
             rotateArmPosition = 0.5;
             r.rotateArm.setPosition(rotateArmPosition);
@@ -125,19 +126,19 @@ public class TeleopWallE2 extends LinearOpMode {
             r.pickAndDrop.setPosition(pickUpStonePosition);
             collectEncoder = COLLECT_ENCODER_PER_INCH;
             r.wallECollect.setTargetPosition((int)collectEncoder);
-            double stopWatch = r.period.milliseconds()+700;
+            double stopWatch = r.period.milliseconds()+600;
             while(opModeIsActive() && r.period.milliseconds() < stopWatch){}
             r.capstoneMover.setPosition(CAPSTONE_OUT);
-//            stopWatch =r.period.milliseconds()+500;
-//            while(opModeIsActive() && r.period.milliseconds() < stopWatch){}
-//            liftEncoder = 0.3*LIFT_ENCODER_PER_RADIAN;
-//            r.wallELift.setTargetPosition((int)liftEncoder);
-//            stopWatch += 500;
-//            while(opModeIsActive() && r.period.milliseconds() < stopWatch){}
-//            pickUpStonePosition = 0.82;
-//            r.pickAndDrop.setPosition(pickUpStonePosition);
+            //stopWatch =r.period.milliseconds()+500;
+            //while(opModeIsActive() && r.period.milliseconds() < stopWatch){}
+            //liftEncoder = 0.22*LIFT_ENCODER_PER_RADIAN;
+            //r.wallELift.setTargetPosition((int)liftEncoder);
+            //stopWatch += 500;
+            //while(opModeIsActive() && r.period.milliseconds() < stopWatch){}
+            //pickUpStonePosition = 0.82;
+            //r.pickAndDrop.setPosition(pickUpStonePosition);
             capstonePicked = true;
-        } else if (joyStick < -0.9 && capstonePicked){
+        } else if (joyStick < -0.9){
             double stopWatch = r.period.milliseconds()+500;
             r.foundationMover.setPosition(FOUNDATIONMOVERMIDDLE);
             r.foundationMover2.setPosition(FOUNDATIONMOVER2MIDDLE);
@@ -150,45 +151,28 @@ public class TeleopWallE2 extends LinearOpMode {
             capstonePicked = false;
         }
         joyStick = gamepad2.left_stick_x;
-        if(joyStick > 0.5 && capstonePicked){
+        if(joyStick > 0.5){
             capstonePosition += INCREMENT/40;
             if(capstonePosition > capstoneHighLimit) capstonePosition = capstoneHighLimit;
             r.capstoneMover.setPosition(capstonePosition);
-        }else if (joyStick < -0.5 && capstonePicked){
+        }else if (joyStick < -0.5){
             capstonePosition -= INCREMENT/40;
-            if(capstonePosition < CAPSTONE_IN) {
-                capstonePicked = false;
-                capstonePosition = CAPSTONE_IN;
-            }
+            if(capstonePosition < CAPSTONE_IN) capstonePosition = CAPSTONE_IN;
             r.capstoneMover.setPosition(capstonePosition);
         }
     }
 
     private void setState(){
         if(gamepad2.a){
-            double theta = ((double)liftPos) / LIFT_ENCODER_PER_RADIAN;
-            double length = ((double)collectPos) / COLLECT_ENCODER_PER_INCH + 17.5;
-            double cosTheta = Math.cos(theta);
-            double sinTheta = Math.sin(theta);
-            double x = length*cosTheta-4*sinTheta;
-            double y = length*sinTheta+4*cosTheta;
-            double tanAlpha = (y+5)/x;
-            double alpha = Math.atan(tanAlpha);
-            targetLiftTwo =(int)(alpha*LIFT_ENCODER_PER_RADIAN);
-            tanAlpha = (y+5)/(x-4.);
-            alpha = Math.atan(tanAlpha);//((5+length*Math.sin(theta))/length/cosTheta);
-            targetLift =(int)(alpha*LIFT_ENCODER_PER_RADIAN);
-            if(targetLift > MAX_LIFT_ENCODER)targetLift = MAX_LIFT_ENCODER;
-            else if(targetLift < MIN_LIFT_ENCODER)targetLift = MIN_LIFT_ENCODER;
-            targetCollect =(int) (((x/Math.cos(alpha) + 4*tanAlpha)-17.5)*COLLECT_ENCODER_PER_INCH);//((cosTheta*length/Math.cos(alpha)-17.5)*COLLECT_ENCODER_PER_INCH);
             r.resetGPS(0,0,0);
+            targetCollect = collectPos;
+            targetLift = liftPos;
             targetRotateArm = rotateArmPosition;
             stateIsSet = true;
             isAngleFree = true;
-            r.leftColor.enableLed(false);
-            r.rightColor.enableLed(false);
         }
     }
+
     private void flipStone(){
         if(gamepad2.left_trigger>0.5){
             for (int i = 10; i<1000 && opModeIsActive(); i=i+10){
@@ -204,9 +188,9 @@ public class TeleopWallE2 extends LinearOpMode {
 
     private void returnState(){
         if(gamepad2.b && stateIsSet){
-            collectEncoder = COLLECT_ENCODER_PER_INCH;
+            collectEncoder = 600;
             r.wallECollect.setTargetPosition((int)collectEncoder);
-            liftEncoder = targetLift;
+            liftEncoder = 0;
             r.wallELift.setTargetPosition((int)liftEncoder);
             double distanceTo = r.prepareMove(0,0,0);
             double power = 0.25;
@@ -226,12 +210,15 @@ public class TeleopWallE2 extends LinearOpMode {
             if(!gamepad1.a) {
                 rotateArmPosition = targetRotateArm;
                 r.rotateArm.setPosition(rotateArmPosition);
-                collectEncoder = targetCollect -
-                        (3./Math.cos(liftEncoder/LIFT_ENCODER_PER_RADIAN) * COLLECT_ENCODER_PER_INCH);
+                collectEncoder = targetCollect;
                 r.wallECollect.setTargetPosition((int)collectEncoder);
-                stateIsSet = false;
-                r.leftColor.enableLed(true);
-                r.rightColor.enableLed(true);
+                liftEncoder = targetLift;
+                r.wallELift.setTargetPosition((int)liftEncoder);
+                double stopWatch = r.period.milliseconds()+600;
+                while(opModeIsActive() && r.period.milliseconds() < stopWatch){}
+                pickUpStonePosition = PICK_UP;
+                r.pickAndDrop.setPosition(pickUpStonePosition);
+                r.wallELift.setTargetPosition(0);
             }
             isAngleFree = true;
         }
@@ -272,7 +259,7 @@ public class TeleopWallE2 extends LinearOpMode {
             r.wallELift.setPower(0.8);
         //neutralLift = liftPos;
         }
-        if(gamepad1.y && !stateIsSet) liftEncoder = 0;
+        if(gamepad1.y ) liftEncoder = 0;
         if(Math.abs(liftEncoder - oldLift)>1.)r.wallELift.setTargetPosition((int)liftEncoder);
     }
 
@@ -291,8 +278,6 @@ public class TeleopWallE2 extends LinearOpMode {
         r.wallELift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         r.wallELift.setPower(0.8);
         r.capstoneMover.setPosition(CAPSTONE_IN);
-        r.foundationMover2.setPosition(foundationMover2Position);
-        r.foundationMover.setPosition(foundationMoverPosition);
         r.startGPS(50);
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -384,6 +369,7 @@ public class TeleopWallE2 extends LinearOpMode {
             r.foundationMover2.setPosition(foundationMover2Position);
         }
     }
+
     private void pickUpStone(){
         double oldRotate = rotateArmPosition;
         double oldPick = pickUpStonePosition;

@@ -43,6 +43,9 @@ public class WallEGPSMeccaBot extends WallEMeccaBot {
         double o = gps.odoData[OdoGPS.O_INDEX];
         x = targetX-x;
         y = targetY-y;
+        if(power < 0.3 && gps.stopped ){
+            power = 0.3;
+        }
         double distanceTo = Math.sqrt(x*x+y*y);
         double bigger = Math.max(Math.abs(x), Math.abs(y));
         x = x/bigger*power; y = y/bigger*power;

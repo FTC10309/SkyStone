@@ -87,12 +87,12 @@ public class HardwareWallEbot {
     public static final int MAX_LIFT_ENCODER = 6300; // 50 degree, 37 inch tall when collector is 10 inch away
     public static final int MIN_LIFT_ENCODER = -1800; // 9 inch above ground, 8 inch extend of collector
     public static final int MAX_COLLECT_ENCODER = 15*COLLECT_ENCODER_PER_INCH;
-    public static final double ROTATE_NEUTRAL = 0.5; //0.74;
-    public static final double ROTATE_BLUE_BACK = 0.12; //0.38;
+    public static final double ROTATE_NEUTRAL = 0.56; //0.74;
+    public static final double ROTATE_BLUE_BACK = 0.18; //0.38;
     public static final double PICK_UP = 0.2;  //0.0;
-    public static final double PICK_DOWN = 0.75 ;
-    public static final double CAPSTONE_IN = 0.07;
-    public static final double CAPSTONE_OUT = 0.28;
+    public static final double PICK_DOWN = 0.79 ;
+    public static final double CAPSTONE_IN = 0.03;
+    public static final double CAPSTONE_OUT = 0.30;
     public ExpansionHubMotor    lFront = null, lBack = null, rFront = null, rBack = null;
     public ExpansionHubMotor    wallELift = null, wallECollect = null /*,left = null, right = null*/;
     public Servo                pickAndDrop = null;

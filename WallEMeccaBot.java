@@ -7,7 +7,7 @@ public class WallEMeccaBot extends HardwareWallEbot {
     //AndyMark NeveRest 40 motor, 103 ticks per round, 4 in wheels,
     private static final double             TICK_MM                 = 3.511;
     private static final double             HEADING_THRESHOLD       = 0.12;
-    private double imuTare          = 0;
+    public double imuTare          = 0;
 
     public double lFrontPower      = 0.0;
     public double rFrontPower      = 0.0;
@@ -113,7 +113,7 @@ public class WallEMeccaBot extends HardwareWallEbot {
 
     private double getError(double targetAngle) {
         getOrientation();
-        return piToMinusPi(targetAngle - getHeading());
+        return piToMinusPi(targetAngle - (getHeading()-imuTare));
     }
 
     private double getSteer(double error, double PCoeff) {

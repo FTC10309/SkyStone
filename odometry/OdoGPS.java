@@ -21,7 +21,8 @@ public class OdoGPS implements Runnable{
     private boolean isRunning = true;
     public double[] odoData = new double[5];
     public static final int X_INDEX = 0, Y_INDEX = 1, O_INDEX = 2, SIN_INDEX = 3, COS_INDEX  = 4;
-    public static final double ENCODER_PER_INCH = 312;
+    public static final double ENCODER_PER_INCH = 306.66;
+    public boolean stopped = true;
 
     //Position variables used for storage and calculations
     double verticalRightEncoderWheelPosition = 0, verticalLeftEncoderWheelPosition = 0, normalEncoderWheelPosition = 0,  changeInRobotOrientation = 0;
@@ -90,7 +91,7 @@ public class OdoGPS implements Runnable{
         normalEncoderWheelPosition = dataPack.getMotorCurrentPosition(horizontalEncoder);
         double rawHorizontalChange = normalEncoderWheelPosition - prevNormalEncoderWheelPosition;
         double horizontalChange = rawHorizontalChange - (changeInRobotOrientation*horizontalEncoderTickPerRadianOffset);
-
+        stopped = (Math.abs(leftChange)+Math.abs(rightChange)+Math.abs(rawHorizontalChange)) < 30;
         double p = ((rightChange + leftChange) / 2);
         double n = horizontalChange;
         //Calculate and update the position values

@@ -39,7 +39,7 @@ public class ImageHelper {
     private final static Scalar BLUE_LOW = new Scalar(140,50,50);
     private final static Scalar BLUE_HIGH = new Scalar(180,255,255);
     private final static Scalar BLACK_LOW = new Scalar(0,0,0);
-    private final static Scalar BLACK_HIGH = new Scalar(255,255,10);
+    private final static Scalar BLACK_HIGH = new Scalar(255,255,20);
     private final static double FOUNDATION_MIN = 4000000;
     private final static int MIN_CONSECUTIVE_COLOR = 2;
     private final static int GRAB_ROWSUM_MIN = 10000;
@@ -62,7 +62,7 @@ public class ImageHelper {
         int picWidth = 20;
         int picHeight = 250;
         //crop picture
-        Mat cropped = new Mat(crop, new Rect(1,450,picWidth,picHeight));
+        Mat cropped = new Mat(crop, new Rect(300,450,picWidth,picHeight));
         Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_RGB2HSV_FULL);
         mask = new Mat();
         Core.inRange(cropped,BLACK_LOW, BLACK_HIGH, mask);
@@ -88,7 +88,38 @@ public class ImageHelper {
                 break;
             }
         }
-        return (leftBlackTop > 160 && rightBlackTop > 190);
+        return (leftBlackTop > 150 && rightBlackTop > 165);
+    }
+    public boolean centerFoundation() {
+        if(crop != null){
+            int picWidth = 20;
+            int picHeight = 200;
+            //crop picture
+            Mat cropped = new Mat(crop, new Rect(crop.width() - picWidth - 1, crop.height() - picHeight - 1, picWidth, picHeight));
+            Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_RGB2HSV_FULL);
+
+            //apply yellow mask;
+            mask = new Mat();
+            Core.inRange(cropped,BLACK_LOW, BLACK_HIGH, mask);
+            return Core.sumElems(mask).val[0] > 25500;
+        }
+        return false;
+    }
+
+    public boolean centerFoundationRed() {
+        if(crop != null){
+            int picWidth = 20;
+            int picHeight = 200;
+            //crop picture
+            Mat cropped = new Mat(crop, new Rect(1, crop.height() - picHeight - 1, picWidth, picHeight));
+            Imgproc.cvtColor(cropped, cropped, Imgproc.COLOR_RGB2HSV_FULL);
+
+            //apply yellow mask;
+            mask = new Mat();
+            Core.inRange(cropped,BLACK_LOW, BLACK_HIGH, mask);
+            return Core.sumElems(mask).val[0] > 25500;
+        }
+        return false;
     }
 
     public boolean seeGrab(int height) {

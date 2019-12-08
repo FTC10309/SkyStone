@@ -2,13 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.util.Range;
 
-// This class provides data and method for driving a meccanum bot and odometery
+// This class provides data and method for driving a meccanum bot
 public class WallEMeccaBot extends HardwareWallEbot {
     //AndyMark NeveRest 40 motor, 103 ticks per round, 4 in wheels,
-    private static final double             TICK_MM                 = 3.511;
     private static final double             HEADING_THRESHOLD       = 0.12;
     public double imuTare          = 0;
-
     public double lFrontPower      = 0.0;
     public double rFrontPower      = 0.0;
     public double lBackPower       = 0.0;
@@ -32,11 +30,8 @@ public class WallEMeccaBot extends HardwareWallEbot {
     public void runMecca(double forward, double right, double cTurn){
         //field centric driving for Meccanum drive, change forward/right based on heading
         getOrientation();
-        double heading = piToMinusPi(getHeading()-imuTare);
-        double temp = forward*Math.cos(heading) - right*Math.sin(heading);
-        right = forward*Math.sin(heading) + right*Math.cos(heading);
-        forward = temp;
-        runMeccaRC(forward,right,cTurn);
+        double heading = -piToMinusPi(getHeading()-imuTare);
+        runMeccaOdo(forward,right,cTurn,Math.sin(heading),Math.cos(heading));
     }
 
     public void runMeccaOdo(double forward, double right, double cTurn, double sin, double cos){
@@ -46,8 +41,7 @@ public class WallEMeccaBot extends HardwareWallEbot {
         runMeccaRC(forward,right,cTurn);
     }
 
-    /*robot centric driving for Meccanum drive, have option to turn either or both sides off
-     by setting leftBackOn/rightBackOn to false*/
+    /*robot centric driving for Meccanum drive*/
     public void runMeccaRC(double forward, double right, double cTurn){
         if (Math.abs(right)>0.1) forward = forward * 0.83; // Jess strafes only 4/5 efficient
         lFrontPower = forward + cTurn + right;
@@ -92,14 +86,6 @@ public class WallEMeccaBot extends HardwareWallEbot {
         result += "; lb: " + String.format("%.2f",lBackPower);
         result += "; rb: " + String.format("%.2f",rBackPower);
         return result;
-    }
-
-    public void directDrive(double lf, double rf, double lb, double rb){//direct control of motors.
-        lFrontPower = lf;
-        rFrontPower = rf;
-        lBackPower = lb;
-        rBackPower = rb;
-        runMotors();
     }
 
     public boolean onHeading(double angle, double PCoeff) {

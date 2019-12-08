@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import org.firstinspires.ftc.teamcode.odometry.OdoGPS;
 
-// This class provides data and method for driving a meccanum bot and odometery
+// This class provides data and method for driving a meccanum bot with odometery
 public class WallEGPSMeccaBot extends WallEMeccaBot {
     public OdoGPS gps;
     private double totalDistance = 0., targetOPerEncoder = 0.;
@@ -43,9 +43,7 @@ public class WallEGPSMeccaBot extends WallEMeccaBot {
         double o = gps.odoData[OdoGPS.O_INDEX];
         x = targetX-x;
         y = targetY-y;
-        if(power < 0.3 && gps.stopped ){
-            power = 0.3;
-        }
+        if(power < 0.3 && gps.stopped )power = 0.3;
         double distanceTo = Math.sqrt(x*x+y*y);
         double bigger = Math.max(Math.abs(x), Math.abs(y));
         x = x/bigger*power; y = y/bigger*power;

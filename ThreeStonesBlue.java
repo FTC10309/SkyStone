@@ -31,11 +31,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
 import org.firstinspires.ftc.teamcode.odometry.OdoGPS;
 import org.firstinspires.ftc.teamcode.vision.ImageHelper;
 import org.firstinspires.ftc.teamcode.vision.VuHelper;
 
-import static org.firstinspires.ftc.teamcode.HardwareWallEbot.AUTO_MIN_POWER;
 import static org.firstinspires.ftc.teamcode.HardwareWallEbot.COLLECT_ENCODER_PER_INCH;
 import static org.firstinspires.ftc.teamcode.HardwareWallEbot.MAX_P;
 import static org.firstinspires.ftc.teamcode.HardwareWallEbot.PICK_UP;
@@ -47,56 +47,57 @@ import static org.firstinspires.ftc.teamcode.odometry.OdoGPS.Y_INDEX;
 
 //Start on blue side
 
- @Autonomous(name="Red 3 Stones", group="Red Linear Opmode")
+ @Autonomous(name="Blue 4 Stones", group="Blue Linear Opmode")
  //@Disabled
- public class ThreeStonesRed extends LinearOpMode {
+ public class ThreeStonesBlue extends LinearOpMode {
 
      // Declare OpMode members.
      private SkyStoneJediBot r = new SkyStoneJediBot();
      double power = MAX_P;
-     double targetY = 32*ENCODER_PER_INCH;
-     double targetX = (52-38.5)* ENCODER_PER_INCH;
-     double[] xRead = new double[5];
-     int numXRead = 0;
+     double targetY = 33*ENCODER_PER_INCH;
+     double targetX = -(52-38.5)* ENCODER_PER_INCH;
 
      @Override
      public void runOpMode() throws InterruptedException {
          VuHelper vu = new VuHelper(hardwareMap);
          vu.vuActivate();
          r.init(hardwareMap);
-         r.setOP(this,vu,false);
+         r.setOP(this,vu,true);
          int skyOrder = r.getFirstStoneGP();
-         r.runMeccaRC(0,0,0.7);
-         while (opModeIsActive() && r.gps.odoData[OdoGPS.O_INDEX] < Math.PI/2-0.4);
+         r.runMeccaRC(0,0,-0.7);
+         while (opModeIsActive() && r.gps.odoData[OdoGPS.O_INDEX] > -Math.PI/2+0.4);
          r.wallELift.setTargetPosition(-100);
-         r.prepareMove(targetX, targetY,Math.PI/2);
-         int hue = 100;
-         while (opModeIsActive() && !((hue > 0 && hue < 50)||(hue > 310 && hue < 360))){
+         r.prepareMove(targetX, targetY,-Math.PI/2);
+         int hue = 0;
+         while (opModeIsActive() && !(hue> 180 && hue < 240)){
              r.moveGPS(MAX_P);
              hue = r.getRightHue();
          }
          r.wallELift.setTargetPosition(1900);
          r.wallECollect.setTargetPosition(18*COLLECT_ENCODER_PER_INCH);
-         targetX = r.gps.odoData[X_INDEX]+21 * ENCODER_PER_INCH;
-         double distanceTo = r.prepareMove(targetX,targetY,Math.PI/2);
-         while(opModeIsActive() && distanceTo > 3*ENCODER_PER_INCH){
+         targetX = r.gps.odoData[X_INDEX]-20 * ENCODER_PER_INCH;
+         double distanceTo = r.prepareMove(targetX,targetY,-Math.PI/2);
+         while(opModeIsActive() && distanceTo > ENCODER_PER_INCH){
               distanceTo = r.moveGPS(power);
-              if(distanceTo < 6*ENCODER_PER_INCH && power > STOP_P)power -= P_INCREASE;
+              if(distanceTo < 7*ENCODER_PER_INCH)power -= P_INCREASE;
+              if(power < STOP_P) power = STOP_P;
          }
          targetY = r.gps.odoData[Y_INDEX]-20*ENCODER_PER_INCH;
          targetX = r.gps.odoData[X_INDEX];
-         r.prepareMove(targetX,targetY,Math.PI/2);
+         r.prepareMove(targetX,targetY,-Math.PI/2);
          power = 0.5;
-         r.moveGPS(power);
          r.im.setImage(vu.getImageFromFrame());
-         while(opModeIsActive() && !r.im.centerFoundationRed() && !r.gps.stopped){
+         while(opModeIsActive() && !r.im.centerFoundation()&& !r.gps.stopped){
              r.moveGPS(power);
              r.im.setImage(vu.getImageFromFrame());
          }
-         r.wallECollect.setTargetPosition(23*COLLECT_ENCODER_PER_INCH);
+         targetX = r.gps.odoData[X_INDEX];
+         targetY = r.gps.odoData[Y_INDEX] - 5*ENCODER_PER_INCH;
+         distanceTo = r.prepareMove(targetX,targetY,-Math.PI/2);
+         while(opModeIsActive() && distanceTo > 3*ENCODER_PER_INCH)distanceTo = r.moveGPS(power);
          targetY = r.gps.odoData[Y_INDEX];
-         targetX = (72-38.5)*ENCODER_PER_INCH;
-         distanceTo = r.prepareMove(targetX,targetY,Math.PI/2);
+         targetX = -(72-38.5)*ENCODER_PER_INCH;
+         distanceTo = r.prepareMove(targetX,targetY,-Math.PI/2);
          int timesSeeFoundation = 0;
          while(opModeIsActive() && distanceTo > 3*ENCODER_PER_INCH  && timesSeeFoundation <3 && !r.gps.stopped){
              distanceTo = r.moveGPS(MAX_P);
@@ -107,119 +108,103 @@ import static org.firstinspires.ftc.teamcode.odometry.OdoGPS.Y_INDEX;
          r.pickAndDrop.setPosition(PICK_UP);
          double foundationX = r.gps.odoData[X_INDEX];
          double foundationY = r.gps.odoData[Y_INDEX];
-         targetY = (20.+9)* ENCODER_PER_INCH;
-         targetX = (44.-38.5) * ENCODER_PER_INCH;
-         distanceTo = r.prepareMove(targetX,targetY,Math.PI/2);
-         power = AUTO_MIN_POWER+0.2;
-         r.moveGPS(power);
+         targetY = 30.* ENCODER_PER_INCH;
+         targetX = -(44.-38.5) * ENCODER_PER_INCH;
+         distanceTo = r.prepareMove(targetX,targetY,-Math.PI/2);
+         r.moveGPS(MAX_P);
          r.wallECollect.setTargetPosition(5*COLLECT_ENCODER_PER_INCH);
          r.wallELift.setTargetPosition(0);
-         while (opModeIsActive() && distanceTo > 6.* ENCODER_PER_INCH){
-             distanceTo = r.moveGPS(power);
-             if(power < MAX_P)power +=P_INCREASE;
-         }
+         while (opModeIsActive() && distanceTo > 6.* ENCODER_PER_INCH)distanceTo = r.moveGPS(MAX_P);
          if(skyOrder == ImageHelper.SKY_OUTSIDE){
-             xRead[numXRead]=r.pickOutsideStone(1,0);
+             r.pickOutsideStone(1,0);
              r.pickOutSideStoneSecondPart();
-             numXRead++;
          }else r.pick2ndStone();
-         r.runMeccaRC(0,0,0.8);
-         while (opModeIsActive() && r.gps.odoData[OdoGPS.O_INDEX] < Math.PI/2-0.42){ }
+         r.runMeccaRC(0,0,-0.8);
+         while (opModeIsActive() && r.gps.odoData[OdoGPS.O_INDEX] > -Math.PI/2+0.42){ }
          r.wallELift.setTargetPosition(-100);
-         targetX = foundationX - 3*ENCODER_PER_INCH;
-         targetY = foundationY-2*ENCODER_PER_INCH;
-         r.prepareMove(targetX,targetY,Math.PI/2+0.12);
+         targetX = foundationX-ENCODER_PER_INCH;
+         targetY = foundationY+ENCODER_PER_INCH;
+         r.prepareMove(targetX,targetY,-Math.PI/2);
          power = MAX_P;
-         while(opModeIsActive() && r.gps.odoData[X_INDEX] < targetX-2*ENCODER_PER_INCH && !r.gps.stopped){
+         while(opModeIsActive() && r.gps.odoData[X_INDEX] > targetX+2*ENCODER_PER_INCH && !r.gps.stopped){
              distanceTo = r.moveGPS(power);
              if(distanceTo < 3*ENCODER_PER_INCH && power > STOP_P)power -= P_INCREASE;
              hue = r.getLeftHue();
-             if((hue > 0 && hue < 50)||(hue > 310 && hue < 360)){
+             if(hue> 180 && hue < 240){
                  r.wallECollect.setTargetPosition(18*COLLECT_ENCODER_PER_INCH);
                  r.wallELift.setTargetPosition(1700);
              }
          }
          r.pickAndDrop.setPosition(PICK_UP);
-         targetY = (20.+9)* ENCODER_PER_INCH;
-         targetX = (44.-38.5) * ENCODER_PER_INCH;
-         distanceTo = r.prepareMove(targetX,targetY,Math.PI/2);
-         power = AUTO_MIN_POWER+0.2;
-         r.moveGPS(power);
+         targetY = 30.* ENCODER_PER_INCH;
+         targetX = -(44-38.5) * ENCODER_PER_INCH;
+         distanceTo = r.prepareMove(targetX,targetY,-Math.PI/2);
+         r.moveGPS(MAX_P);
          r.wallECollect.setTargetPosition(5*COLLECT_ENCODER_PER_INCH);
          r.wallELift.setTargetPosition(0);
-         while (opModeIsActive() && distanceTo > 6.* ENCODER_PER_INCH){
-             distanceTo = r.moveGPS(power);
-             if(power < MAX_P)power += P_INCREASE;
-         }
-         xRead[numXRead]=r.pickOutsideStone(2,0);
+         while (opModeIsActive() && distanceTo > 6.* ENCODER_PER_INCH)distanceTo = r.moveGPS(MAX_P);
+         r.pickOutsideStone(2,0);
          r.pickOutSideStoneSecondPart();
-         numXRead++;
-         r.runMeccaRC(0,0,0.8);
-         while (opModeIsActive() && r.gps.odoData[OdoGPS.O_INDEX] < Math.PI/2-0.42){ }
-         r.wallELift.setTargetPosition(0);
-         targetX = foundationX - 3*ENCODER_PER_INCH;
-         targetY = foundationY - 2*ENCODER_PER_INCH;
-         distanceTo = r.prepareMove(targetX,targetY,Math.PI/2+0.12);
+         r.runMeccaRC(0,0,-0.8);
+         while (opModeIsActive() && r.gps.odoData[OdoGPS.O_INDEX] > -Math.PI/2+0.42){ }
+         targetX = foundationX-ENCODER_PER_INCH;
+         targetY = foundationY+2*ENCODER_PER_INCH;
+         distanceTo = r.prepareMove(targetX,targetY,-Math.PI/2);
          power = MAX_P;
-         while(opModeIsActive() && r.gps.odoData[X_INDEX] < targetX-3*ENCODER_PER_INCH && !r.gps.stopped){
+         while(opModeIsActive() && r.gps.odoData[X_INDEX] > targetX+3*ENCODER_PER_INCH && !r.gps.stopped){
              distanceTo = r.moveGPS(power);
              if(distanceTo < 3*ENCODER_PER_INCH && power > STOP_P)power -= P_INCREASE;
              hue = r.getLeftHue();
-             if((hue > 0 && hue < 50)||(hue > 310 && hue < 360)){
+             if(hue> 180 && hue < 240){
                  r.wallECollect.setTargetPosition(12*COLLECT_ENCODER_PER_INCH);
                  r.wallELift.setTargetPosition(2000);
              }
          }
          r.pickAndDrop.setPosition(PICK_UP);
          double firstDecision = r.period.seconds();
-         targetY = (20.+9)* ENCODER_PER_INCH;
-         targetX = (44.-38.5) * ENCODER_PER_INCH;
-         distanceTo = r.prepareMove(targetX,targetY,Math.PI/2);
-         power = AUTO_MIN_POWER+0.2;
-         r.moveGPS(power);
+         targetY = 30.* ENCODER_PER_INCH;
+         targetX = -(44-38.5) * ENCODER_PER_INCH;
+         distanceTo = r.prepareMove(targetX,targetY,-Math.PI/2);
+         r.moveGPS(MAX_P);
          r.wallECollect.setTargetPosition(5*COLLECT_ENCODER_PER_INCH);
          r.wallELift.setTargetPosition(0);
-         while (opModeIsActive() && distanceTo > 6.* ENCODER_PER_INCH){
-             distanceTo = r.moveGPS(power);
-             if(power < MAX_P)power += P_INCREASE;
-         }
-         xRead[numXRead]=r.pickOutsideStone(3,0);
+         while (opModeIsActive() && distanceTo > 6.* ENCODER_PER_INCH)distanceTo = r.moveGPS(MAX_P);
+         r.pickOutsideStone(3,0);
          r.pickOutSideStoneSecondPart();
-         numXRead++;
          double decisionTime = r.period.seconds();
          boolean goForIt = decisionTime < 25.75;
-         r.runMeccaRC(0,0,0.8);
-         while (opModeIsActive() && r.gps.odoData[OdoGPS.O_INDEX] < Math.PI/2-0.42){ }
-         targetX = foundationX - 3*ENCODER_PER_INCH;
-         targetY = foundationY - 2*ENCODER_PER_INCH;
-         r.prepareMove(targetX,targetY,Math.PI/2);
+         r.runMeccaRC(0,0,-0.8);
+         while (opModeIsActive() && r.gps.odoData[OdoGPS.O_INDEX] > -Math.PI/2+0.42){ }
+         targetX = foundationX-ENCODER_PER_INCH;
+         targetY = foundationY+2*ENCODER_PER_INCH;
+         r.prepareMove(targetX,targetY,-Math.PI/2);
          r.moveGPS(MAX_P);
          r.wallECollect.setTargetPosition(6*COLLECT_ENCODER_PER_INCH);
          hue = 100;
-         while (opModeIsActive() && !((hue > 0 && hue < 50)||(hue > 310 && hue < 360))){
+         while (opModeIsActive() && !(hue> 180 && hue < 240)){
              r.moveGPS(MAX_P);
              hue = r.getRightHue();
          }
          if(goForIt) {
              r.wallECollect.setTargetPosition(10 * COLLECT_ENCODER_PER_INCH);
              r.wallELift.setTargetPosition(2000);
-             r.prepareMove(targetX, targetY, Math.PI/2 + 0.12);
+             r.prepareMove(targetX, targetY, -Math.PI/2);
              power = MAX_P;
-             while (opModeIsActive() && r.gps.odoData[X_INDEX] < targetX-5*ENCODER_PER_INCH && !r.gps.stopped) {
+             while (opModeIsActive() && r.gps.odoData[X_INDEX] > targetX+5*ENCODER_PER_INCH && !r.gps.stopped) {
                  distanceTo = r.moveGPS(power);
                  if (distanceTo < 6 * ENCODER_PER_INCH && power > STOP_P) power -= P_INCREASE;
              }
              r.pickAndDrop.setPosition(PICK_UP);
          }else sleep(200);
          targetY=r.gps.odoData[Y_INDEX]+ENCODER_PER_INCH;
-         targetX = (22-38.5)*ENCODER_PER_INCH;
-         r.prepareMove(targetX,targetY,Math.PI/2);
+         targetX = -(22-38.5)*ENCODER_PER_INCH;
+         r.prepareMove(targetX,targetY,-Math.PI/2);
          power = MAX_P;
          r.moveGPS(power);
          hue =0;
          r.wallECollect.setTargetPosition(6*COLLECT_ENCODER_PER_INCH);
          r.wallELift.setTargetPosition(0);
-         while(opModeIsActive() && ! (hue > 0 && hue < 50)||(hue > 310 && hue < 360)){
+         while(opModeIsActive() && !(hue> 180 && hue < 240)){
              r.moveGPS(power);
              hue = r.getLeftHue();
          }
@@ -228,7 +213,6 @@ import static org.firstinspires.ftc.teamcode.odometry.OdoGPS.Y_INDEX;
          r.writeRobot();
          double stopWatch = r.period.seconds();
          while(opModeIsActive() && !gamepad1.a){
-             for(int i = 0; i < numXRead; i++)telemetry.addData("X ", xRead[i]);
              telemetry.addData("first decision ", firstDecision);
              telemetry.addData("decision time ", decisionTime);
              telemetry.addData("finished in ", stopWatch);
@@ -238,3 +222,4 @@ import static org.firstinspires.ftc.teamcode.odometry.OdoGPS.Y_INDEX;
          vu.vuDeActivate();
      }
  }
+
